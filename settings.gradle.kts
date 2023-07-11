@@ -18,7 +18,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            from("no.nordicsemi.android.gradle:version-catalog:1.6.5")
+            from("no.nordicsemi.android.gradle:version-catalog:1.7.0")
         }
     }
 }
@@ -29,3 +29,12 @@ include(":app_blek_client")
 include(":app_blek_mock")
 include(":app_blek_server")
 include(":app_commons")
+include(":uiscanner")
+
+if (file("../Kotlin-BLE-Library").exists()) {
+    includeBuild("../Kotlin-BLE-Library")
+}
+
+if (file("../Android-Common-Libraries").exists()) {
+    includeBuild("../Android-Common-Libraries")
+}
