@@ -45,7 +45,6 @@ import kotlinx.coroutines.launch
 import no.nordicsemi.android.common.navigation.Navigator
 import no.nordicsemi.android.common.navigation.viewmodel.SimpleNavigationViewModel
 import no.nordicsemi.android.kotlin.ble.client.main.callback.BleGattClient
-import no.nordicsemi.android.kotlin.ble.client.main.connect
 import no.nordicsemi.android.kotlin.ble.client.main.service.BleGattCharacteristic
 import no.nordicsemi.android.kotlin.ble.client.main.service.BleGattServices
 import no.nordicsemi.android.kotlin.ble.core.ServerDevice
@@ -90,7 +89,7 @@ class BlinkyViewModel @Inject constructor(
 
     private fun startGattClient(blinkyDevice: ServerDevice) = viewModelScope.launch {
         //Connect a Bluetooth LE device.
-        client = blinkyDevice.connect(context)
+        client = BleGattClient.connect(context, blinkyDevice)
 
         if (!client.isConnected) {
             return@launch

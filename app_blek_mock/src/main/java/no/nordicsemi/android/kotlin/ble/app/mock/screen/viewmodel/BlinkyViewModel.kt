@@ -17,7 +17,7 @@ import no.nordicsemi.android.kotlin.ble.app.mock.BlinkyDestinationId
 import no.nordicsemi.android.kotlin.ble.app.mock.screen.repository.BlinkyButtonParser
 import no.nordicsemi.android.kotlin.ble.app.mock.screen.repository.BlinkyLedParser
 import no.nordicsemi.android.kotlin.ble.app.mock.screen.view.BlinkyViewState
-import no.nordicsemi.android.kotlin.ble.client.main.connect
+import no.nordicsemi.android.kotlin.ble.client.main.callback.BleGattClient
 import no.nordicsemi.android.kotlin.ble.client.main.service.BleGattCharacteristic
 import no.nordicsemi.android.kotlin.ble.client.main.service.BleGattServices
 import no.nordicsemi.android.kotlin.ble.core.ServerDevice
@@ -50,7 +50,7 @@ class BlinkyViewModel @Inject constructor(
 
     private fun startGattClient(blinkyDevice: ServerDevice) = viewModelScope.launch {
         //Connect a Bluetooth LE device.
-        val client = blinkyDevice.connect(context)
+        val client = BleGattClient.connect(context, blinkyDevice)
 
         if (!client.isConnected) {
             return@launch
