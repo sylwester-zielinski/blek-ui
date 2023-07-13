@@ -36,7 +36,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import no.nordicsemi.android.common.navigation.createSimpleDestination
 import no.nordicsemi.android.common.navigation.defineDestination
-import no.nordicsemi.android.common.test.main.page.*
+import no.nordicsemi.android.common.test.main.page.BasicsPage
+import no.nordicsemi.android.common.test.main.page.ConnectionPage
+import no.nordicsemi.android.common.test.main.page.FontsPage
+import no.nordicsemi.android.common.test.main.page.WarningPage
+import no.nordicsemi.android.common.test.main.page.WizardPage
 import no.nordicsemi.android.common.test.scanner.ScannerDestination
 import no.nordicsemi.android.common.test.simple.HelloDestinations
 import no.nordicsemi.android.common.theme.view.PagerView

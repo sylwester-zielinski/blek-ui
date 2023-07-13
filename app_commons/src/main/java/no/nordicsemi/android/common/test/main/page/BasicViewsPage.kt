@@ -61,7 +61,6 @@ import no.nordicsemi.android.common.test.scanner.Scanner
 import no.nordicsemi.android.common.test.simple.Hello
 import no.nordicsemi.android.common.theme.NordicTheme
 import no.nordicsemi.android.common.theme.view.PagerViewItem
-import no.nordicsemi.android.common.theme.view.RssiIcon
 import no.nordicsemi.android.common.ui.scanner.main.DeviceListItem
 import no.nordicsemi.android.kotlin.ble.core.ServerDevice
 import java.util.*

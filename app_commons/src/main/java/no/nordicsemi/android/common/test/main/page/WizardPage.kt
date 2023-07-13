@@ -31,7 +31,12 @@
 
 package no.nordicsemi.android.common.test.main.page
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -54,7 +59,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import no.nordicsemi.android.common.test.R
 import no.nordicsemi.android.common.theme.NordicTheme
-import no.nordicsemi.android.common.theme.view.*
+import no.nordicsemi.android.common.theme.view.PagerViewItem
+import no.nordicsemi.android.common.theme.view.ProgressItem
+import no.nordicsemi.android.common.theme.view.ProgressItemStatus
+import no.nordicsemi.android.common.theme.view.WizardStepAction
+import no.nordicsemi.android.common.theme.view.WizardStepComponent
+import no.nordicsemi.android.common.theme.view.WizardStepState
 
 val WizardPage = PagerViewItem("Wizard") {
     WizardScreen()
