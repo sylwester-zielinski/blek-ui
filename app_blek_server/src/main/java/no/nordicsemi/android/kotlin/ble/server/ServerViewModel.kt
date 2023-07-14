@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import no.nordicsemi.android.kotlin.ble.advertiser.BleAdvertiser
+import no.nordicsemi.android.kotlin.ble.advertiser.NordicAdvertiser
 import no.nordicsemi.android.kotlin.ble.advertiser.callback.OnAdvertisingSetStarted
 import no.nordicsemi.android.kotlin.ble.advertiser.callback.OnAdvertisingSetStopped
 import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertiseConfig
@@ -123,7 +123,7 @@ class ServerViewModel @Inject constructor(
             val server = BleGattServer.create(context, serviceConfig)
 
 
-            val advertiser = BleAdvertiser.create(context)
+            val advertiser = NordicAdvertiser.create(context)
             val advertiserConfig = BleAdvertiseConfig(
                 settings = BleAdvertiseSettings(
                     deviceName = "My Server" // Advertise a device name
