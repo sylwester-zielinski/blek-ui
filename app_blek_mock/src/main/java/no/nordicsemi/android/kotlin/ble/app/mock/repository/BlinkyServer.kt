@@ -6,14 +6,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import no.nordicsemi.android.common.core.DataByteArray
 import no.nordicsemi.android.kotlin.ble.app.mock.screen.viewmodel.BlinkySpecifications
 import no.nordicsemi.android.kotlin.ble.core.MockServerDevice
 import no.nordicsemi.android.kotlin.ble.core.data.BleGattPermission
 import no.nordicsemi.android.kotlin.ble.core.data.BleGattProperty
-import no.nordicsemi.android.kotlin.ble.server.main.BleGattServer
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleGattServerServiceType
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleServerGattCharacteristicConfig
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleServerGattServiceConfig
+import no.nordicsemi.android.kotlin.ble.server.main.ServerBleGatt
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattCharacteristicConfig
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattServiceConfig
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattServiceType
 import javax.inject.Inject
 
 @SuppressLint("MissingPermission")
@@ -22,25 +23,25 @@ class BlinkyServer @Inject constructor(
 ) {
 
     fun start(context: Context) = scope.launch {
-        val ledCharacteristic = BleServerGattCharacteristicConfig(
+        val ledCharacteristic = ServerBleGattCharacteristicConfig(
             BlinkySpecifications.UUID_LED_CHAR,
             listOf(BleGattProperty.PROPERTY_READ, BleGattProperty.PROPERTY_WRITE),
             listOf(BleGattPermission.PERMISSION_READ, BleGattPermission.PERMISSION_WRITE)
         )
 
-        val buttonCharacteristic = BleServerGattCharacteristicConfig(
+        val buttonCharacteristic = ServerBleGattCharacteristicConfig(
             BlinkySpecifications.UUID_BUTTON_CHAR,
             listOf(BleGattProperty.PROPERTY_READ, BleGattProperty.PROPERTY_NOTIFY),
             listOf(BleGattPermission.PERMISSION_READ, BleGattPermission.PERMISSION_WRITE)
         )
 
-        val serviceConfig = BleServerGattServiceConfig(
+        val serviceConfig = ServerBleGattServiceConfig(
             BlinkySpecifications.UUID_SERVICE_DEVICE,
-            BleGattServerServiceType.SERVICE_TYPE_PRIMARY,
+            ServerBleGattServiceType.SERVICE_TYPE_PRIMARY,
             listOf(ledCharacteristic, buttonCharacteristic)
         )
 
-        val server = BleGattServer.create(
+        val server = ServerBleGatt.create(
             context = context,
             config = arrayOf(serviceConfig),
             mock = MockServerDevice()
@@ -66,11 +67,11 @@ class BlinkyServer @Inject constructor(
 
     private var isButtonPressed = false
 
-    private fun newButtonValue(): ByteArray {
+    private fun newButtonValue(): DataByteArray {
         return if (isButtonPressed) {
-            byteArrayOf(0x01)
+            DataByteArray.from(0x01)
         } else {
-            byteArrayOf(0x00)
+            DataByteArray.from(0x00)
         }.also {
             isButtonPressed = !isButtonPressed
         }

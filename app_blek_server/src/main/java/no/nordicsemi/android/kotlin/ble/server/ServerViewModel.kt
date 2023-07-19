@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import no.nordicsemi.android.common.core.DataByteArray
 import no.nordicsemi.android.kotlin.ble.advertiser.NordicAdvertiser
 import no.nordicsemi.android.kotlin.ble.advertiser.callback.OnAdvertisingSetStarted
 import no.nordicsemi.android.kotlin.ble.advertiser.callback.OnAdvertisingSetStopped
@@ -56,12 +57,12 @@ import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertiseData
 import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertiseSettings
 import no.nordicsemi.android.kotlin.ble.core.data.BleGattPermission
 import no.nordicsemi.android.kotlin.ble.core.data.BleGattProperty
-import no.nordicsemi.android.kotlin.ble.server.main.BleGattServer
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleGattServerService
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleGattServerServiceType
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleServerGattCharacteristic
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleServerGattCharacteristicConfig
-import no.nordicsemi.android.kotlin.ble.server.main.service.BleServerGattServiceConfig
+import no.nordicsemi.android.kotlin.ble.server.main.ServerBleGatt
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattCharacteristic
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattCharacteristicConfig
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattService
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattServiceConfig
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattServiceType
 import java.util.*
 import javax.inject.Inject
 
@@ -92,36 +93,35 @@ class ServerViewModel @Inject constructor(
     private val _state = MutableStateFlow(ServerState())
     val state = _state.asStateFlow()
 
-    private var ledCharacteristic: BleServerGattCharacteristic? = null
-    private var buttonCharacteristic: BleServerGattCharacteristic? = null
+    private var ledCharacteristic: ServerBleGattCharacteristic? = null
+    private var buttonCharacteristic: ServerBleGattCharacteristic? = null
 
     private var advertisementJob: Job? = null
 
     fun advertise() {
         advertisementJob = viewModelScope.launch {
             //Define led characteristic
-            val ledCharacteristic = BleServerGattCharacteristicConfig(
+            val ledCharacteristic = ServerBleGattCharacteristicConfig(
                 BlinkySpecifications.UUID_LED_CHAR,
                 listOf(BleGattProperty.PROPERTY_READ, BleGattProperty.PROPERTY_WRITE),
                 listOf(BleGattPermission.PERMISSION_READ, BleGattPermission.PERMISSION_WRITE)
             )
 
             //Define button characteristic
-            val buttonCharacteristic = BleServerGattCharacteristicConfig(
+            val buttonCharacteristic = ServerBleGattCharacteristicConfig(
                 BlinkySpecifications.UUID_BUTTON_CHAR,
                 listOf(BleGattProperty.PROPERTY_READ, BleGattProperty.PROPERTY_NOTIFY),
                 listOf(BleGattPermission.PERMISSION_READ, BleGattPermission.PERMISSION_WRITE)
             )
 
             //Put led and button characteristics inside a service
-            val serviceConfig = BleServerGattServiceConfig(
+            val serviceConfig = ServerBleGattServiceConfig(
                 BlinkySpecifications.UUID_SERVICE_DEVICE,
-                BleGattServerServiceType.SERVICE_TYPE_PRIMARY,
+                ServerBleGattServiceType.SERVICE_TYPE_PRIMARY,
                 listOf(ledCharacteristic, buttonCharacteristic)
             )
 
-            val server = BleGattServer.create(context, serviceConfig)
-
+            val server = ServerBleGatt.create(context, serviceConfig)
 
             val advertiser = NordicAdvertiser.create(context)
             val advertiserConfig = BleAdvertiseConfig(
@@ -164,16 +164,16 @@ class ServerViewModel @Inject constructor(
         _state.value = _state.value.copy(isAdvertising = false)
     }
 
-    private fun setUpServices(services: BleGattServerService) {
+    private fun setUpServices(services: ServerBleGattService) {
         val ledCharacteristic = services.findCharacteristic(BlinkySpecifications.UUID_LED_CHAR)!!
         val buttonCharacteristic = services.findCharacteristic(BlinkySpecifications.UUID_BUTTON_CHAR)!!
 
         ledCharacteristic.value.onEach {
-            _state.value = _state.value.copy(isLedOn = !it.contentEquals(byteArrayOf(0x00)))
+            _state.value = _state.value.copy(isLedOn = it != DataByteArray.from(0x00))
         }.launchIn(viewModelScope)
 
         buttonCharacteristic.value.onEach {
-            _state.value = _state.value.copy(isButtonPressed = !it.contentEquals(byteArrayOf(0x00)))
+            _state.value = _state.value.copy(isButtonPressed = it != DataByteArray.from(0x00))
         }.launchIn(viewModelScope)
 
         this.ledCharacteristic = ledCharacteristic
@@ -182,9 +182,9 @@ class ServerViewModel @Inject constructor(
 
     fun onButtonPressedChanged(isButtonPressed: Boolean) {
         val value = if (isButtonPressed) {
-            byteArrayOf(0x01)
+            DataByteArray.from(0x01)
         } else {
-            byteArrayOf(0x00)
+            DataByteArray.from(0x00)
         }
         buttonCharacteristic?.setValue(value)
     }

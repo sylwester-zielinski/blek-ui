@@ -31,18 +31,18 @@
 
 package no.nordicsemi.android.kotlin.ble.client.details
 
+import no.nordicsemi.android.common.core.DataByteArray
+
 object BlinkyLedParser {
 
-    private val STATE_OFF = byteArrayOf(0x00)
-    private val STATE_ON = byteArrayOf(0x01)
+    private val STATE_OFF = DataByteArray.from(0x00)
+    private val STATE_ON = DataByteArray.from(0x01)
 
-    fun isLedOn(data: ByteArray): Boolean {
-        return if (data.contentEquals(STATE_ON)) {
-            true
-        } else if (data.contentEquals(STATE_OFF)) {
-            false
-        } else {
-            false
+    fun isLedOn(data: DataByteArray): Boolean {
+        return when (data) {
+            STATE_ON -> true
+            STATE_OFF -> false
+            else -> false
         }
     }
 

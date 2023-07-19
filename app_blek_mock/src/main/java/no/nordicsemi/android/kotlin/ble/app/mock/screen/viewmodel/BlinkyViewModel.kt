@@ -11,15 +11,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import no.nordicsemi.android.common.core.DataByteArray
 import no.nordicsemi.android.common.navigation.Navigator
 import no.nordicsemi.android.common.navigation.viewmodel.SimpleNavigationViewModel
 import no.nordicsemi.android.kotlin.ble.app.mock.BlinkyDestinationId
 import no.nordicsemi.android.kotlin.ble.app.mock.screen.repository.BlinkyButtonParser
 import no.nordicsemi.android.kotlin.ble.app.mock.screen.repository.BlinkyLedParser
 import no.nordicsemi.android.kotlin.ble.app.mock.screen.view.BlinkyViewState
-import no.nordicsemi.android.kotlin.ble.client.main.callback.BleGattClient
-import no.nordicsemi.android.kotlin.ble.client.main.service.BleGattCharacteristic
-import no.nordicsemi.android.kotlin.ble.client.main.service.BleGattServices
+import no.nordicsemi.android.kotlin.ble.client.main.callback.ClientBleGatt
+import no.nordicsemi.android.kotlin.ble.client.main.service.ClientBleGattCharacteristic
+import no.nordicsemi.android.kotlin.ble.client.main.service.ClientBleGattServices
 import no.nordicsemi.android.kotlin.ble.core.ServerDevice
 import java.util.*
 import javax.inject.Inject
@@ -45,12 +46,12 @@ class BlinkyViewModel @Inject constructor(
         startGattClient(blinkyDevice)
     }
 
-    private lateinit var ledCharacteristic: BleGattCharacteristic
-    private lateinit var buttonCharacteristic: BleGattCharacteristic
+    private lateinit var ledCharacteristic: ClientBleGattCharacteristic
+    private lateinit var buttonCharacteristic: ClientBleGattCharacteristic
 
     private fun startGattClient(blinkyDevice: ServerDevice) = viewModelScope.launch {
         //Connect a Bluetooth LE device.
-        val client = BleGattClient.connect(context, blinkyDevice)
+        val client = ClientBleGatt.connect(context, blinkyDevice)
 
         if (!client.isConnected) {
             return@launch
@@ -61,7 +62,7 @@ class BlinkyViewModel @Inject constructor(
         configureGatt(services)
     }
 
-    private suspend fun configureGatt(services: BleGattServices) {
+    private suspend fun configureGatt(services: ClientBleGattServices) {
         //Remember needed service and characteristics which are used to communicate with the DK.
         val service = services.findService(BlinkySpecifications.UUID_SERVICE_DEVICE)!!
         ledCharacteristic = service.findCharacteristic(BlinkySpecifications.UUID_LED_CHAR)!!
@@ -82,10 +83,10 @@ class BlinkyViewModel @Inject constructor(
         viewModelScope.launch {
             if (state.value.isLedOn) {
                 _state.value = _state.value.copy(isLedOn = false)
-                ledCharacteristic.write(byteArrayOf(0x00))
+                ledCharacteristic.write(DataByteArray.from(0x00))
             } else {
                 _state.value = _state.value.copy(isLedOn = true)
-                ledCharacteristic.write(byteArrayOf(0x01))
+                ledCharacteristic.write(DataByteArray.from(0x01))
             }
         }
     }
