@@ -37,7 +37,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import no.nordicsemi.android.kotlin.ble.scanner.NordicScanner
+import no.nordicsemi.android.kotlin.ble.scanner.BleScanner
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -47,7 +47,7 @@ internal class HiltModule {
     fun providesScanner(
         @ApplicationContext
         context: Context
-    ): NordicScanner {
-        return NordicScanner(context)
+    ): BleScanner {
+        return BleScanner(context)
     }
 }

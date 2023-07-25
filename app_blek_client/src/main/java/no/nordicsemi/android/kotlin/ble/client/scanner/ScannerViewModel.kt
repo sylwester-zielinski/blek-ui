@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.onEach
 import no.nordicsemi.android.common.navigation.Navigator
 import no.nordicsemi.android.kotlin.ble.client.details.BlinkyDestinationId
 import no.nordicsemi.android.kotlin.ble.core.ServerDevice
-import no.nordicsemi.android.kotlin.ble.scanner.NordicScanner
+import no.nordicsemi.android.kotlin.ble.scanner.BleScanner
 import no.nordicsemi.android.kotlin.ble.scanner.aggregator.BleScanResultAggregator
 import javax.inject.Inject
 
@@ -57,7 +57,7 @@ class ScannerViewModel @Inject constructor(
     private val navigator: Navigator
 ) : ViewModel() {
 
-    private val scanner = NordicScanner(context)
+    private val scanner = BleScanner(context)
 
     private val _devices = MutableStateFlow<List<ServerDevice>>(emptyList())
     val devices = _devices.asStateFlow()

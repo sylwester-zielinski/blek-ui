@@ -49,12 +49,12 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import no.nordicsemi.android.common.core.DataByteArray
-import no.nordicsemi.android.kotlin.ble.advertiser.NordicAdvertiser
+import no.nordicsemi.android.kotlin.ble.advertiser.BleAdvertiser
 import no.nordicsemi.android.kotlin.ble.advertiser.callback.OnAdvertisingSetStarted
 import no.nordicsemi.android.kotlin.ble.advertiser.callback.OnAdvertisingSetStopped
-import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertiseConfig
-import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertiseData
-import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertiseSettings
+import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertisingConfig
+import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertisingData
+import no.nordicsemi.android.kotlin.ble.core.advertiser.BleAdvertisingSettings
 import no.nordicsemi.android.kotlin.ble.core.data.BleGattPermission
 import no.nordicsemi.android.kotlin.ble.core.data.BleGattProperty
 import no.nordicsemi.android.kotlin.ble.server.main.ServerBleGatt
@@ -123,12 +123,12 @@ class ServerViewModel @Inject constructor(
 
             val server = ServerBleGatt.create(context, serviceConfig)
 
-            val advertiser = NordicAdvertiser.create(context)
-            val advertiserConfig = BleAdvertiseConfig(
-                settings = BleAdvertiseSettings(
+            val advertiser = BleAdvertiser.create(context)
+            val advertiserConfig = BleAdvertisingConfig(
+                settings = BleAdvertisingSettings(
                     deviceName = "My Server" // Advertise a device name
                 ),
-                advertiseData = BleAdvertiseData(
+                advertiseData = BleAdvertisingData(
                     ParcelUuid(BlinkySpecifications.UUID_SERVICE_DEVICE) //Advertise main service uuid.
                 )
             )
